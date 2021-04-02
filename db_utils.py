@@ -44,3 +44,39 @@ def change_language(db_file: str, lang: str):
     c.execute(change_lang_query)
     conn.commit()
     c.close()
+
+
+def change_api_key(db_file: str, new_api_key: str):
+    change_api_key_query = f'''
+        update settings set API_KEY = "{new_api_key}";
+        '''
+    conn = sqlite3.connect(db_file)
+    c = conn.cursor()
+    c.execute(change_api_key_query)
+    conn.commit()
+    c.close()
+
+
+def change_settings(lang: str):
+    print('Выберите настройки, которые хотите изменить: \n'
+          '1. Изменить язык ответов\n'
+          '2. Изменить API_KEY')
+    user_input = input()
+    if user_input == '1':
+        if lang == 'ru':
+            change_language('settings.db', 'en')
+            print('Язык успешно изменен на английский')
+            return 'en'
+        elif lang == 'en':
+            change_language('settings.db', 'ru')
+            print('Язык успешно изменен на русский')
+            return 'ru'
+    elif user_input == '2':
+        print('Введите новый API KEY')
+        new_api_key = input()
+        change_api_key('settings.db', new_api_key=new_api_key)
+        print('Новый API KEY успешно установлен')
+        return lang
+    else:
+        change_settings(lang)
+        print('Введите корректный ответ')

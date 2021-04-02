@@ -2,7 +2,7 @@ import os
 import sys
 import requests
 
-from db_utils import select_all_tasks, create_db
+from db_utils import select_all_tasks, create_db, change_settings
 from helpers import check_settings, get_index
 
 if not os.path.isfile('settings.db'):
@@ -23,37 +23,41 @@ headers = {
 
 language = settings["language"]
 while is_used:
-    print('Введите желаемый адрес: ')
-    address = f'{{"query": "{input()}", "language": "{language}"}}'.encode('utf-8')
+    print('Введите желаемый адрес либо 0, если хотите изменить настройки: \n')
+    inp = input()
+    if inp == '0':
+        language = change_settings(language)
+    else:
+        address = f'{{"query": "{inp}", "language": "{language}"}}'.encode('utf-8')
 
-    res = requests.post(url, data=address, headers=headers).json().get('suggestions')
-    if res:
-        if len(res) > 1:
-            print('Выберите нужный вам вариант: \n')
-            for ad in res:
-                index = res.index(ad) + 1
-                print(f"{index}: {ad['value']}")
-            print('\nВведите 0 чтобы завершить работу программы')
+        res = requests.post(url, data=address, headers=headers).json().get('suggestions')
+        if res:
+            if len(res) > 1:
+                print('Выберите нужный вам вариант либо введите 0, если хотите закрыть программу: \n')
+                for ad in res:
+                    index = res.index(ad) + 1
+                    print(f"{index}: {ad['value']}")
 
-            wanted_address_index = get_index(res)
-            if wanted_address_index == 0:
-                sys.exit(0)
+                wanted_address_index = get_index(res)
+                if wanted_address_index == 0:
+                    sys.exit(0)
+                else:
+                    wanted_address_index -= 1
+                    wanted_address = res[wanted_address_index]
+                    print(f'\n{wanted_address.get("value")}, '
+                          f"Широта: {wanted_address.get('data').get('geo_lat')},"
+                          f" Долгота: {wanted_address.get('data').get('geo_lon')} ")
             else:
-                wanted_address_index -= 1
-                print(f'\n{res[wanted_address_index].get("value")}, '
-                      f"Широта: {res[wanted_address_index].get('data').get('geo_lat')},"
-                      f" Долгота: {res[wanted_address_index].get('data').get('geo_lon')} ")
+                print(f'\nПо вашему запросу найден один вариант: {res[0].get("value")}, '
+                      f'Широта: {res[0].get("data").get("geo_lat")}, '
+                      f'Долгота: {res[0].get("data").get("geo_lon")}')
         else:
-            print(f'\nПо вашему запросу найден один вариант: {res[0].get("value")}, '
-                  f' Широта: {res[0].get("data").get("geo_lat")}, '
-                  f'Долгота: {res[0].get("data").get("geo_lon")}')
-    else:
-        print('Не найден адрес')
-    print('\nНайти еще адрес? Введите ответ в формате Y/N')
-    user_input = input()
-    if user_input.lower() == 'y' or user_input.lower() == 'н':
-        pass
-    elif user_input.lower() == 'n' or user_input.lower() == 'т':
-        is_used = False
-    else:
-        print('Введите ответ в формате "Y/N"')
+            print('Не найден такой адрес')
+        print('\nНайти еще координаты? Введите ответ в формате Y/N')
+        user_input = input()
+        if user_input.lower() == 'y' or user_input.lower() == 'н':
+            pass
+        elif user_input.lower() == 'n' or user_input.lower() == 'т':
+            is_used = False
+        else:
+            print('Введите ответ в формате "Y/N"')

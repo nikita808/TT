@@ -8,6 +8,9 @@ def get_index(data: list):
     except ValueError:
         print(f'Введите число от 1 до {len(data)}')
         get_index(data)
+    except IndexError:
+        print(f'Введите число от 1 до {len(data)}')
+        get_index(data)
 
 
 def check_settings(lang: str):
