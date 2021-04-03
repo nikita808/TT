@@ -17,7 +17,7 @@ def select_all_tasks(db_file: str):
 
 
 def create_db(db_file: str):
-    print('Введите API_KEY')
+    print('Введите ключ доступа API')
     API_KEY = input()
     create_query = f'''CREATE TABLE settings (
     default_url TEXT (255),
@@ -72,10 +72,10 @@ def change_settings(lang: str):
             print('Язык успешно изменен на русский')
             return 'ru'
     elif user_input == '2':
-        print('Введите новый API KEY')
+        print('Введите новый ключ доступа API')
         new_api_key = input()
         change_api_key('settings.db', new_api_key=new_api_key)
-        print('Новый API KEY успешно установлен')
+        print('Новый ключ доступа API успешно установлен')
         return lang
     else:
         change_settings(lang)

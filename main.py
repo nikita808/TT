@@ -23,7 +23,7 @@ headers = {
 
 language = settings["language"]
 while is_used:
-    print('Введите желаемый адрес либо 0, если хотите изменить настройки: \n')
+    print('Введите желаемый адрес либо "0", если хотите изменить настройки: \n')
     inp = input()
     if inp == '0':
         language = change_settings(language)
@@ -33,7 +33,7 @@ while is_used:
         res = requests.post(url, data=address, headers=headers).json().get('suggestions')
         if res:
             if len(res) > 1:
-                print('Выберите нужный вам вариант либо введите 0, если хотите закрыть программу: \n')
+                print('Выберите нужный вам вариант либо введите "0", если хотите закрыть программу: \n')
                 for ad in res:
                     index = res.index(ad) + 1
                     print(f"{index}: {ad['value']}")
@@ -52,8 +52,8 @@ while is_used:
                       f'Широта: {res[0].get("data").get("geo_lat")}, '
                       f'Долгота: {res[0].get("data").get("geo_lon")}')
         else:
-            print('Не найден такой адрес')
-        print('\nНайти еще координаты? Введите ответ в формате Y/N')
+            print('По вашему запросу не найдено адресов')
+        print('\nПродолжить использование программы? Введите ответ в формате Y/N')
         user_input = input()
         if user_input.lower() == 'y' or user_input.lower() == 'н':
             pass
